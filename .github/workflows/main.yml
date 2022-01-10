@@ -32,10 +32,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: public/wwwroot
           force_orphan: true
-      
-      # changes the base-tag in index.html from '/' to 'BlazorGitHubPagesDemo' to match GitHub Pages repository subdirectory
-      - name: Change base-tag in index.html from / to BlazorApp2
-        run: sed -i 's/<base href="\/" \/>/<base href="\/BlazorApp2\/" \/>/g' release/wwwroot/index.html
         
       # copy index.html to 404.html to serve the same file when a file is not found
       - name: copy index.html to 404.html
