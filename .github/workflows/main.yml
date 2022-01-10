@@ -1,0 +1,46 @@
+# This is ".github/workflows/gh-pages.yml" file.
+# This is an EXAMPLE of "GitHub Actions Workflow file".
+
+name: blazorapp1 github pages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the code
+      - uses: actions/checkout@v2
+
+      # Install .NET Core SDK
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.101
+
+      # Publish the site
+      - name: Publish
+        run: dotnet publish BlazorApp2.sln -c:Release -o:public -p:GHPages=true
+
+      # Deploy the site
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: public/wwwroot
+          force_orphan: true
+      
+      # changes the base-tag in index.html from '/' to 'BlazorGitHubPagesDemo' to match GitHub Pages repository subdirectory
+      - name: Change base-tag in index.html from / to BlazorApp2
+        run: sed -i 's/<base href="\/" \/>/<base href="\/BlazorApp2\/" \/>/g' release/wwwroot/index.html
+        
+      # copy index.html to 404.html to serve the same file when a file is not found
+      - name: copy index.html to 404.html
+        run: cp release/wwwroot/index.html release/wwwroot/404.html
+      
+      # add .nojekyll file to tell GitHub pages to not treat this as a Jekyll project. (Allow files and folders starting with an underscore)
+      - name: Add .nojekyll file
+        run: touch release/wwwroot/.nojekyll
